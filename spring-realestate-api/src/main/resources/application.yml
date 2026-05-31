@@ -1,5 +1,5 @@
 server:
-  port: 8090
+  port: 8081
 
 spring:
   servlet:
@@ -9,7 +9,8 @@ spring:
       max-request-size: 10MB
   jpa:
     hibernate:
-      ddl-auto: create-drop
+#      ddl-auto: create-drop
+      ddl-auto: update
     generate-ddl: true
     show-sql: false
     properties:
@@ -19,9 +20,9 @@ spring:
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
     databaseName: realestate
-    url: jdbc:mysql://mysql_realestate:3306/${spring.datasource.databaseName}
+    url: jdbc:mysql://localhost:3306/${spring.datasource.databaseName}
     username: root
-    password:
+    password: root
 
 application:
   security:
