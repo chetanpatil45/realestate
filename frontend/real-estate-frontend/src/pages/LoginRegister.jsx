@@ -36,12 +36,16 @@ const LoginRegister = () => {
                     password: formData.password
                 });
 
-                const { accessToken, refreshToken } = response.data;
-                // Decode the token to get the exact role saved in your database (e.g., 'CUSTOMER' or 'DEALER')
                 const decodedToken = jwtDecode(accessToken);
-                const userRole = decodedToken.role || decodedToken.authorities?.[0] || 'CUSTOMER';
+                console.log("Newly Decoded Payload:", decodedToken); // You will now see 'role' here!
 
-                // Pass the true database role directly to your global application state
+                // Extract role and normalize it ('ROLE_DEALER' becomes 'DEALER')
+                let userRole = decodedToken.role || 'CUSTOMER';
+                if (userRole.startsWith('ROLE_')) {
+                    userRole = userRole.replace('ROLE_', '');
+                }
+
+                // Pass it to your global authentication state
                 login(accessToken, userRole, { refreshToken });
                 setMessage('Login successful!');
             } else {
@@ -75,25 +79,28 @@ const LoginRegister = () => {
                     </p>
                 </div>
 
-                {/* ROLE TOGGLE SWITCH */}
-                <div className="flex bg-gray-200 p-1 rounded-lg">
-                    <button
-                        type="button"
-                        className={`w-1/2 py-2 text-sm font-medium rounded-md transition-all ${role === 'CUSTOMER' ? 'bg-blue-600 text-white shadow' : 'text-gray-700 hover:text-gray-950'
-                            }`}
-                        onClick={() => setRole('CUSTOMER')}
-                    >
-                        Customer
-                    </button>
-                    <button
-                        type="button"
-                        className={`w-1/2 py-2 text-sm font-medium rounded-md transition-all ${role === 'DEALER' ? 'bg-blue-600 text-white shadow' : 'text-gray-700 hover:text-gray-950'
-                            }`}
-                        onClick={() => setRole('DEALER')}
-                    >
-                        Dealer (Agent)
-                    </button>
-                </div>
+
+                {/* ROLE TOGGLE SWITCH - Only shows during Registration */}
+                {!isLogin && (
+                    <div className="flex bg-gray-200 p-1 rounded-lg">
+                        <button
+                            type="button"
+                            className={`w-1/2 py-2 text-sm font-medium rounded-md transition-all ${role === 'CUSTOMER' ? 'bg-blue-600 text-white shadow' : 'text-gray-700 hover:text-gray-950'
+                                }`}
+                            onClick={() => setRole('CUSTOMER')}
+                        >
+                            Customer
+                        </button>
+                        <button
+                            type="button"
+                            className={`w-1/2 py-2 text-sm font-medium rounded-md transition-all ${role === 'DEALER' ? 'bg-blue-600 text-white shadow' : 'text-gray-700 hover:text-gray-950'
+                                }`}
+                            onClick={() => setRole('DEALER')}
+                        >
+                            Dealer (Agent)
+                        </button>
+                    </div>
+                )}
 
                 {error && <div className="p-3 text-sm text-red-700 bg-red-100 rounded-lg">{error}</div>}
                 {message && <div className="p-3 text-sm text-green-700 bg-green-100 rounded-lg">{message}</div>}

@@ -53,7 +53,15 @@ public class JwtService {
     }
 
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+        Map<String, Object> extraClaims = new HashMap<>();
+
+        // Extract the role from Spring Security's authorities and add it to the JWT claims
+        if (userDetails.getAuthorities() != null && !userDetails.getAuthorities().isEmpty()) {
+            String role = userDetails.getAuthorities().iterator().next().getAuthority();
+            extraClaims.put("role", role);
+        }
+
+        return generateToken(extraClaims, userDetails);
     }
 
     public String generateToken(

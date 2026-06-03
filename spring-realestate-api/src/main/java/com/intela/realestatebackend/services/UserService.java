@@ -43,17 +43,25 @@ public class UserService {
 
     @Transactional
     public void updateProfile(HttpServletRequest servletRequest, MultipartFile[] images, UpdateProfileRequest request) throws IllegalAccessException {
-        // Find the CustomerInformation associated with the userId where propertyId is null
+        // 1. Fetch user and profile once
         User user = getUserByToken(servletRequest, jwtService, this.userRepository);
-
-        // Update user details based on UpdateProfileRequest
         Profile profile = profileRepository.findByProfileOwnerId(user.getId())
                 .orElseThrow(() -> new RuntimeException("Profile not found for user"));
-        this.addIds(servletRequest, images);
-        // Update user details based on UpdateProfileRequest
+
+        // 2. Process images if any are provided (inline logic or helper method without database saves)
+        if (images != null && images.length > 0) {
+            Set<ID> ids = new HashSet<>();
+            Util.multipartFileToIDList(user.getId(), profileRepository, images, ids, imageService);
+
+            // Add to the profile managed in this persistence context
+            profile.getIds().addAll(ids);
+        }
+
+        // 3. Update text fields from the request payload
         Util.updateProfileFromRequest(profile, request);
-        // Save the updated user
         profile.setRelationships();
+
+        // 4. A single save handles the entire graph flush safely
         profileRepository.save(profile);
     }
 
