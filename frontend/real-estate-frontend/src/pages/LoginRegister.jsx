@@ -36,19 +36,32 @@ const LoginRegister = () => {
                     password: formData.password
                 });
 
-                const decodedToken = jwtDecode(accessToken);
-                console.log("Newly Decoded Payload:", decodedToken); // You will now see 'role' here!
+                // 1. MUST extract these variables from the backend response first!
+                const { accessToken, refreshToken } = response.data;
 
-                // Extract role and normalize it ('ROLE_DEALER' becomes 'DEALER')
+                // 2. Now you can safely pass accessToken into the decoder
+                const decodedToken = jwtDecode(accessToken);
+                console.log("Newly Decoded Payload:", decodedToken);
+
+                // Extract role and normalize it
                 let userRole = decodedToken.role || 'CUSTOMER';
-                if (userRole.startsWith('ROLE_')) {
+
+                // Map your exact backend permission structure to frontend dashboard roles
+                if (userRole.includes('dealer')) {
+                    userRole = 'DEALER';
+                } else if (userRole.includes('customer')) {
+                    userRole = 'CUSTOMER';
+                } else if (userRole.startsWith('ROLE_')) {
                     userRole = userRole.replace('ROLE_', '');
                 }
+
+                console.log("Normalized Role for App Navigation:", userRole);
 
                 // Pass it to your global authentication state
                 login(accessToken, userRole, { refreshToken });
                 setMessage('Login successful!');
-            } else {
+            }
+            else {
                 // --- REGISTRATION FLOW ---
                 // Sending the exact JSON structure matching your Postman payload
                 await API.post('/api/v1/auth/register', {
