@@ -1,9 +1,11 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { AuthContext } from './context/AuthContext';
+import Home from './pages/Home';
 import LoginRegister from './pages/LoginRegister';
 import CustomerDashboard from './pages/CustomerDashboard';
 import DealerDashboard from './pages/DealerDashboard';
+import AboutUs from './pages/AboutUs';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -12,9 +14,15 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Auth Route: Redirect to dashboard if already logged in */}
+        {/* Public Main Landing Page */}
+        <Route path="/" element={<Home />} />
+        
+        {/* Public About Us Page */}
+        <Route path="/about" element={<AboutUs />} />
+
+        {/* Auth Route: Redirect if already logged in, otherwise show login screen */}
         <Route 
-          path="/" 
+          path="/login" 
           element={user ? <Navigate to={user.role === 'DEALER' ? '/dealer' : '/customer'} replace /> : <LoginRegister />} 
         />
 
@@ -38,7 +46,7 @@ function App() {
           } 
         />
 
-        {/* Catch-all redirect to login */}
+        {/* Catch-all redirect to home */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

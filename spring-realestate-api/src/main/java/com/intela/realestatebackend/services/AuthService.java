@@ -79,9 +79,8 @@ public class AuthService {
         var savedUser = userRepository.save(user);
 
         Map<String, Object> claims = new HashMap<>();
-        if (savedUser.getAuthorities() != null && !savedUser.getAuthorities().isEmpty()) {
-            String role = savedUser.getAuthorities().iterator().next().getAuthority();
-            claims.put("role", role);
+        if (savedUser.getRole() != null) {
+            claims.put("role", savedUser.getRole().toString());
         }
 
         var jwtToken = jwtService.generateToken(claims, savedUser);
@@ -128,9 +127,8 @@ public class AuthService {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             Map<String, Object> claims = new HashMap<>();
-            if (user.getAuthorities() != null && !user.getAuthorities().isEmpty()) {
-                String role = user.getAuthorities().iterator().next().getAuthority();
-                claims.put("role", role);
+            if (user.getRole() != null) {
+                claims.put("role", user.getRole().toString());
             }
 
             revokeAllUserTokens(user);

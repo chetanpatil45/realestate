@@ -2,9 +2,12 @@ import { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import API from '../api/axios';
 import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 
 const LoginRegister = () => {
     const { login } = useContext(AuthContext);
+    const navigate = useNavigate(); // Add this line
+
     const [isLogin, setIsLogin] = useState(true);
     const [role, setRole] = useState('CUSTOMER');
 
@@ -43,23 +46,17 @@ const LoginRegister = () => {
                 const decodedToken = jwtDecode(accessToken);
                 console.log("Newly Decoded Payload:", decodedToken);
 
-                // Extract role and normalize it
-                let userRole = decodedToken.role || 'CUSTOMER';
+                // Extract role and normalize it cleanly
+                const userRole = decodedToken.role ? decodedToken.role.toUpperCase() : 'CUSTOMER';
 
-                // Map your exact backend permission structure to frontend dashboard roles
-                if (userRole.includes('dealer')) {
-                    userRole = 'DEALER';
-                } else if (userRole.includes('customer')) {
-                    userRole = 'CUSTOMER';
-                } else if (userRole.startsWith('ROLE_')) {
-                    userRole = userRole.replace('ROLE_', '');
-                }
-
-                console.log("Normalized Role for App Navigation:", userRole);
+                console.log("True Database Role Normalized:", userRole);
 
                 // Pass it to your global authentication state
                 login(accessToken, userRole, { refreshToken });
                 setMessage('Login successful!');
+
+                // Redirect instantly based on database authentication response role mapping
+                navigate(userRole === 'DEALER' ? '/dealer' : '/customer');
             }
             else {
                 // --- REGISTRATION FLOW ---
