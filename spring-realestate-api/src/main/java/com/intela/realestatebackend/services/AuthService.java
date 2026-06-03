@@ -23,6 +23,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.intela.realestatebackend.util.Util.getUserByToken;
 
@@ -75,8 +77,16 @@ public class AuthService {
                 .build();
 
         var savedUser = userRepository.save(user);
-        var jwtToken = jwtService.generateToken(savedUser);
+
+        Map<String, Object> claims = new HashMap<>();
+        if (savedUser.getAuthorities() != null && !savedUser.getAuthorities().isEmpty()) {
+            String role = savedUser.getAuthorities().iterator().next().getAuthority();
+            claims.put("role", role);
+        }
+
+        var jwtToken = jwtService.generateToken(claims, savedUser);
         var refreshToken = jwtService.generateRefreshToken(savedUser);
+
         saveUserToken(savedUser, jwtToken, TokenType.ACCESS);
         saveUserToken(savedUser, refreshToken, TokenType.REFRESH);
 
@@ -117,8 +127,15 @@ public class AuthService {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
+            Map<String, Object> claims = new HashMap<>();
+            if (user.getAuthorities() != null && !user.getAuthorities().isEmpty()) {
+                String role = user.getAuthorities().iterator().next().getAuthority();
+                claims.put("role", role);
+            }
+
             revokeAllUserTokens(user);
-            var jwtToken = jwtService.generateToken(user);
+            // Call the 2-parameter method overload to guarantee claims are pushed
+            var jwtToken = jwtService.generateToken(claims, user);
             var refreshToken = jwtService.generateRefreshToken(user);
             saveUserToken(user, jwtToken, TokenType.ACCESS);
             saveUserToken(user, refreshToken, TokenType.REFRESH);
