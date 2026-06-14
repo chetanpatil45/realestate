@@ -74,7 +74,7 @@ src/main/java
 
 Before running the project, ensure you have:
 
-- Java 17 or higher
+- Java 21 or higher
 - Maven 3.8+
 - MySQL 8+
 
