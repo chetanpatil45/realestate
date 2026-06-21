@@ -104,7 +104,7 @@ spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
 
 ---
 
-## 🔐 Security Configuration
+##  Security Configuration
 
 The application uses JWT authentication.
 
@@ -123,7 +123,7 @@ Authorization: Bearer <jwt-token>
 
 ---
 
-## ▶️ Running the Application
+## Running the Application
 
 ### Clone Repository
 
@@ -152,7 +152,7 @@ http://localhost:8080
 
 ---
 
-## 📚 API Documentation
+## API Documentation
 
 Base URL:
 
