@@ -4,7 +4,7 @@ A Spring Boot backend application for managing real estate properties, users, bo
 
 ---
 
-## 🚀 Technologies Used
+## Technologies Used
 
 - Java 17+
 - Spring Boot 3.x
@@ -19,7 +19,7 @@ A Spring Boot backend application for managing real estate properties, users, bo
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 
@@ -536,5 +536,5 @@ http://localhost:8080/swagger-ui/index.html
 
 ## 👨‍💻 Author
 Chetan Bachchhav<br>
-Developed using Spring Boot, Java, JPA, MySQL, and JWT Authentication.```
+Developed using Spring Boot, Java, JPA, MySQL, and JWT Authentication.
 
